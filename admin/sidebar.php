@@ -66,6 +66,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="user_audit.php" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-blue-600 group">
+                        <i class="bi bi-file-earmark-plus text-blue-300 group-hover:text-blue-200"></i>
+                        <span class="ml-3">User Audit</span>
+                    </a>
+                </li>
+                <li>
                     <a href="logout.php" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-blue-600 group">
                         <i class="bi bi-box-arrow-right text-blue-300 group-hover:text-blue-200"></i>
                         <span class="ml-3">Log out</span>
