@@ -5,13 +5,13 @@ include "connection.php";
 // Constants for lockout
 define('MAX_ATTEMPTS', 5);
 define('LOCKOUT_TIME', 15); // in minutes
-define('SESSION_TIMEOUT', 2); // in minutes
+define('SESSION_TIMEOUT', 2); // Updated to 2 minutes
 
 // Check if the user is already logged in
 if (isset($_SESSION['username'])) {
     // Check if session is expired
     if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > SESSION_TIMEOUT * 60) {
-        // Session expired
+        error_log("Session expired"); // Debug: Log to PHP error log
         session_unset();     // Unset $_SESSION variable
         session_destroy();   // Destroy the session
         header("Location: login.php"); // Redirect to login page
@@ -70,6 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response']
                 $_SESSION['username'] = $username;
                 $_SESSION['LAST_ACTIVITY'] = time(); // Update last activity time
 
+                // Log the login action
+                $action = "Login";
+                $log_query = "INSERT INTO audit_logs (username, action) VALUES ('$username', '$action')";
+                mysqli_query($conn, $log_query);
+
+                // Redirect to the index page
                 header("Location: index.php");
                 exit();
             } else {
