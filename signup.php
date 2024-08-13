@@ -26,14 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response']
         echo "<script>alert('Please fill in all fields.');</script>";
     } elseif ($password != $confirmPassword) {
         $confirmPasswordError = 'Password does not match';
-    } elseif (!preg_match($passwordPolicyRegex, $password)) {
-        $passwordError = 'Password must be 8-12 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.';
     } else {
         $hashedPassword = md5($password); // Encrypt the password using md5
-        $query = "INSERT INTO users(first_name, last_name, username, password) VALUES('$fname','$lname','$username','$hashedPassword')";
+        $query = "INSERT INTO users(first_name, last_name, username, password) 
+        VALUES('$fname','$lname','$username','$hashedPassword')";
         $run = mysqli_query($conn, $query);
         if ($run) {
-            $modalScript = "<script>alert('Sign up successful.'); document.getElementById('createaccount-modal').classList.remove('modal-visible');</script>";
+            $modalScript = "<script>alert('Sign up successful.'); document.getElementById('createaccount-modal')
+            .classList.remove('modal-visible');</script>";
         } else {
             echo "<script>alert('An error occurred. Please try again later.');</script>";
         }
@@ -63,7 +63,6 @@ echo $modalScript;
         // Default strength is weak
         var strength = "Weak";
         var textColor = "text-red-500";
-
         // Regular expressions to match different types of characters
         var regex = {
             lowerCase: /[a-z]/,
@@ -71,7 +70,6 @@ echo $modalScript;
             numbers: /[0-9]/,
             specialChars: /[^A-Za-z0-9]/
         };
-
         // Check for each type of character and increase strength
         var score = 0;
         if (regex.lowerCase.test(password)) score++;
@@ -80,23 +78,27 @@ echo $modalScript;
         if (regex.specialChars.test(password)) score++;
         if (password.length >= 8 && password.length <= 12) score++;
 
-        // Set the width of the strength meter based on the score
         var meterWidth = score * 20; // Each criteria contributes 20% to the score
         strengthMeter.style.width = meterWidth + "%";
-
-        // Determine strength text and color
+       // Determine strength text and color
         if (score >= 4) {
             strength = "Strong";
             textColor = "text-green-500";
+            meterColor = "bg-green-500"; 
         } else if (score >= 3) {
             strength = "Medium";
             textColor = "text-yellow-500";
+            meterColor = "bg-yellow-500"; 
         }
 
         // Display strength and color
         strengthText.innerHTML = strength;
         strengthText.classList.remove("text-red-500", "text-yellow-500", "text-green-500");
         strengthText.classList.add(textColor);
+
+        // Update the meter color
+        strengthMeter.classList.remove("bg-red-500", "bg-yellow-500", "bg-green-500");
+        strengthMeter.classList.add(meterColor);
     }
     </script>
 </head>
@@ -116,6 +118,10 @@ echo $modalScript;
                 <div>
                     <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
                     <input type="text" name="username" id="username" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Username" required />
+                </div>
+                <div>
+                    <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                    <input type="text" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Email" required />
                 </div>
                 <div>
                     <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>

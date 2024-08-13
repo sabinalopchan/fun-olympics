@@ -9,8 +9,6 @@ if (isset($_SESSION['username'])) {
 
 // Validate login credentials
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = "admin"; // Default username
-    $password = "admin"; // Default password
 
     if ($_POST['username'] === $username && $_POST['password'] === $password) {
         // Set session variables
@@ -20,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: dashboard.php");
         exit;
     } else {
-        $error = "Invalid username or password or you a subscriber.";
+        $error = "Invalid username or password or you a user.";
     }
 }
 ?>

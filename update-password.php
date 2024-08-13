@@ -65,7 +65,6 @@ session_start();
         include 'connection.php';
 
         if (isset($_GET['submit'])) {
-
             $username = $_GET['username'];
             $new_password = $_GET['password'];
             $confirm_password = $_GET['cpassword'];
@@ -84,20 +83,15 @@ session_start();
                         break;
                     }
                 }
-
                 if ($password_reused) {
                     echo "<p class='mt-4 text-sm text-red-600 text-center'>You cannot reuse your recent passwords!</p>";
                 } else {
-                    // Update the password
                     $update_query = "UPDATE users SET password='$new_password_hash', last_password_change=NOW() WHERE username='$username'";
                     $update_result = mysqli_query($conn, $update_query);
-
                     if ($update_result) {
-                        // Insert the new password into the history
                         $history_insert_query = "INSERT INTO password_history (username, password_hash) VALUES ('$username', '$new_password_hash')";
                         mysqli_query($conn, $history_insert_query);
 
-                        // Log the password change
                         $action = "Password Change";
                         $log_query = "INSERT INTO audit_logs (username, action) VALUES ('$username', '$action')";
                         mysqli_query($conn, $log_query);

@@ -12,7 +12,7 @@ $conn = mysqli_connect($servername, $username, $password, $db_name, $port);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
-echo "Connected successfully";
+// echo "Connected successfully";
 
 // Close the connection
 // mysqli_close($conn);
