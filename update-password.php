@@ -61,31 +61,59 @@ session_start();
 
           <p class="mt-4 text-sm text-center">Don't have an account? <a href="signup.php" class="text-blue-500">Create New Account</a></p>
         </form>
-
         <?php
         include 'connection.php';
+
         if (isset($_GET['submit'])) {
 
-          $c = $_GET['username'];
-          $a = $_GET['password'];
-          $b = $_GET['cpassword'];
-          $a = md5($a);
-          $b = md5($b);
-          if ($a == $b) {
-            $query = "UPDATE users SET password='$b' WHERE username='$c'";
-            $run = mysqli_query($conn, $query);
-            if ($run) {
-            // Log the password change
-              $action = "Password Change";
-              $log_query = "INSERT INTO audit_logs (username, action) VALUES ('$username', '$action')";
-              mysqli_query($conn, $log_query);
-              header("location:index.php?update=true");
+            $username = $_GET['username'];
+            $new_password = $_GET['password'];
+            $confirm_password = $_GET['cpassword'];
+            $new_password_hash = md5($new_password);
+            $confirm_password_hash = md5($confirm_password);
+
+            if ($new_password_hash === $confirm_password_hash) {
+                // Check password history
+                $history_query = "SELECT password_hash FROM password_history WHERE username='$username' ORDER BY change_date DESC LIMIT 5";
+                $history_result = mysqli_query($conn, $history_query);
+
+                $password_reused = false;
+                while ($row = mysqli_fetch_assoc($history_result)) {
+                    if ($row['password_hash'] === $new_password_hash) {
+                        $password_reused = true;
+                        break;
+                    }
+                }
+
+                if ($password_reused) {
+                    echo "<p class='mt-4 text-sm text-red-600 text-center'>You cannot reuse your recent passwords!</p>";
+                } else {
+                    // Update the password
+                    $update_query = "UPDATE users SET password='$new_password_hash', last_password_change=NOW() WHERE username='$username'";
+                    $update_result = mysqli_query($conn, $update_query);
+
+                    if ($update_result) {
+                        // Insert the new password into the history
+                        $history_insert_query = "INSERT INTO password_history (username, password_hash) VALUES ('$username', '$new_password_hash')";
+                        mysqli_query($conn, $history_insert_query);
+
+                        // Log the password change
+                        $action = "Password Change";
+                        $log_query = "INSERT INTO audit_logs (username, action) VALUES ('$username', '$action')";
+                        mysqli_query($conn, $log_query);
+
+                        header("Location: index.php?update=true");
+                        exit();
+                    } else {
+                        echo "<p class='mt-4 text-sm text-red-600 text-center'>Failed to update password. Please try again.</p>";
+                    }
+                }
+            } else {
+                echo "<p class='mt-4 text-sm text-red-600 text-center'>Passwords do not match!</p>";
             }
-          } else {
-            echo "<p class='mt-4 text-sm text-red-600 text-center'>Password does not match!</p>";
-          }
         }
         ?>
+
       </div>
     </div>
   </div>
