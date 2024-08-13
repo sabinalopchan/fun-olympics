@@ -3,23 +3,23 @@ session_start();
 include "connection.php";
 
 // Constants
-define('MAX_ATTEMPTS', 5);
+define('MAX_ATTEMPTS', 3);
 define('LOCKOUT_TIME', 15); // in minutes
-define('SESSION_TIMEOUT', 2); // in minutes
+define('SESSION_TIMEOUT', 30); // in minutes
 define('PASSWORD_EXPIRY_DAYS', 90); // Password expiry period in days
 
 // Check if the user is already logged in
 if (isset($_SESSION['username'])) {
     // Check if session is expired
     if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY']) > SESSION_TIMEOUT * 60) {
-        error_log("Session expired"); // Debug: Log to PHP error log
-        session_unset();     // Unset $_SESSION variable
+        error_log("Session expired");
+        session_unset();
         session_destroy();   // Destroy the session
-        header("Location: login.php"); // Redirect to login page
+        header("Location: login.php");
         exit();
     }
-    $_SESSION['LAST_ACTIVITY'] = time(); // Update last activity time
-    header("Location: index.php"); // Redirect to index.php if already logged in
+    $_SESSION['LAST_ACTIVITY'] = time();
+    header("Location: index.php");
     exit();
 }
 
@@ -73,8 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response']
                 header("Location: update_password.php"); // Redirect to update password page
                 exit();
             }
-
-            // Check password
+            // Check passwords
             if ($user['password'] == $password) {
                 // Reset failed attempts and lockout time upon successful login
                 $update_query = "UPDATE users SET failed_attempts = 0, lockout_time = NULL WHERE username = '$username'";
@@ -96,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response']
                 // Increment failed attempts
                 $failed_attempts = $user['failed_attempts'] + 1;
 
-                if ($failed_attempts >= MAX_ATTEMPTS) {
+                if ($failed_attempts >= 3) {
                     // Lock the account
                     $lockout_time = (new DateTime())->format('Y-m-d H:i:s');
                     $update_query = "UPDATE users SET failed_attempts = $failed_attempts, lockout_time = '$lockout_time' WHERE username = '$username'";
