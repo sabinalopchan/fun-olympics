@@ -32,8 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response']
     $request = file_get_contents($url);
     $data = json_decode($request);
     $username = $_POST['username'];
-    $password = md5($_POST['password']); // Consider using a more secure hashing method like bcrypt
-
+    $password = md5($_POST['password']); 
     if ($data->success == false) {
         echo "<script>alert('Please complete the reCAPTCHA verification.');</script>";
     } elseif ($username == '' || $password == '') {
