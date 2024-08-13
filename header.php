@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Check if the user is logged in
+
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
 ?>
 
@@ -145,6 +145,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
             </form>
             <?php
             include 'connection.php';
+
             if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response'])) {
                 $secretkey = "6Leei2AoAAAAAIhxCM6r-o5TquBrZyHWQyLYAQtg";
                 $ip = $_SERVER['REMOTE_ADDR'];
