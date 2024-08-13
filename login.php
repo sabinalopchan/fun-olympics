@@ -2,10 +2,11 @@
 session_start();
 include "connection.php";
 
-// Constants for lockout
+// Constants
 define('MAX_ATTEMPTS', 5);
 define('LOCKOUT_TIME', 15); // in minutes
-define('SESSION_TIMEOUT', 2); // Updated to 2 minutes
+define('SESSION_TIMEOUT', 2); // in minutes
+define('PASSWORD_EXPIRY_DAYS', 90); // Password expiry period in days
 
 // Check if the user is already logged in
 if (isset($_SESSION['username'])) {
@@ -61,6 +62,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response']
                 }
             }
 
+            // Check if password has expired
+            $last_change_date = new DateTime($user['last_password_change']);
+            $current_date = new DateTime();
+            $interval = $current_date->diff($last_change_date);
+            $days_since_change = $interval->days;
+
+            if ($days_since_change > PASSWORD_EXPIRY_DAYS) {
+                // Password expired
+                header("Location: update_password.php"); // Redirect to update password page
+                exit();
+            }
+
+            // Check password
             if ($user['password'] == $password) {
                 // Reset failed attempts and lockout time upon successful login
                 $update_query = "UPDATE users SET failed_attempts = 0, lockout_time = NULL WHERE username = '$username'";
