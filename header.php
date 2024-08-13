@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-
+// Check if the user is logged in
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
 ?>
 
@@ -145,32 +145,41 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
             </form>
             <?php
             include 'connection.php';
+            $encryption_method = "AES-256-CBC";
+            $secret_key = "YourSecretKey123"; // Use a secure key
+            $secret_iv = "YourSecretIV123"; // Initialization vector (IV)
+
+            // Hash the key and IV to ensure they are the correct length
+            $key = hash('sha256', $secret_key);
+            $iv = substr(hash('sha256', $secret_iv), 0, 16);
 
             if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['g-recaptcha-response'])) {
-                $secretkey = "6Leei2AoAAAAAIhxCM6r-o5TquBrZyHWQyLYAQtg";
-                $ip = $_SERVER['REMOTE_ADDR'];
-                $response = $_POST['g-recaptcha-response'];
-                $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secretkey&response=$response&remoteip=$ip";
-                $request = file_get_contents($url);
-                $data = json_decode($request);
-                $a = $_POST['fname'];
-                $b = $_POST['lname'];
-                $c = $_POST['address'];
-                $d = $_POST['city'];
-                $e = $_POST['country'];
-                $f = $_POST['phone'];
-                $g = $_POST['email'];
-                $h = $_POST['sport'];
+            $secretkey = "6Leei2AoAAAAAIhxCM6r-o5TquBrZyHWQyLYAQtg";
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $response = $_POST['g-recaptcha-response'];
+            $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secretkey&response=$response&remoteip=$ip";
+            $request = file_get_contents($url);
+            $data = json_decode($request);
+            $a = $_POST['fname'];
+            $b = $_POST['lname'];
+            $c = $_POST['address'];
+            $d = $_POST['city'];
+            $e = $_POST['country'];
+            // Encrypt phone number and email
+            $f = openssl_encrypt($_POST['phone'], $encryption_method, $key, 0, $iv);
+            $g = openssl_encrypt($_POST['email'], $encryption_method, $key, 0, $iv);
+            $h = $_POST['sport'];
 
-                $query = "insert into reservation(first_name,last_name,address,city,country,phone,email,olympicGames)values('$a','$b','$c','$d','$e','$f','$g','$h')";
-                $run = mysqli_query($conn, $query);
+            $query = "INSERT INTO reservation (first_name, last_name, address, city, country, phone, email, olympicGames)
+                    VALUES ('$a', '$b', '$c', '$d', '$e', '$f', '$g', '$h')";
+            $run = mysqli_query($conn, $query);
 
-                if ($run) {
-                    echo "<script>window.alert('Reservation Successfull!')</script>";
-                } else {
-                    echo "<script>window.alert('Not Success! Try Again')</script>";
-                }
+            if ($run) {
+                echo "<script>window.alert('Reservation Successful!')</script>";
+            } else {
+                echo "<script>window.alert('Not Success! Try Again')</script>";
             }
+        }
             ?>
 
 
