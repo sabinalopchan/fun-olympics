@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Security Headers
+header("X-Content-Type-Options: nosniff");
+header("X-Frame-Options: DENY");
 // Check if the user is logged in
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
 ?>
