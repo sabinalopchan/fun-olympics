@@ -22,7 +22,6 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : null;
             <?php else : ?>
                 <a href="login.php">
                     <button type="button" class="text-white bg-gradient-to-r from-yellow-300 to-green-400 hover:from-green-500 hover:to-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-lg px-6 py-3 dark:bg-gradient-to-r dark:from-yellow-900 dark:to-green-400 dark:hover:from-yellow-800 dark:hover:to-green-500 dark:focus:ring-yellow-800 transition duration-300 ease-in-out">Sign in</button>
-
                 </a>
             <?php endif; ?>
             <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" type="button" class="text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800 transition duration-300 ease-in-out">Reserve Now</button>
